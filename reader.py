@@ -190,10 +190,3 @@ class Reader:
             string+=char
         print()
         return string
-
-if __name__ == '__main__':
-    reader = Reader(testlist)
-    try:
-        print(reader.read("\[probeKit]$>"))
-    except EOFError():
-        pass
