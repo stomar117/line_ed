@@ -1,4 +1,3 @@
-import readchar
 from rich.console import Console
 Console = Console()
 
@@ -110,44 +109,91 @@ class Splitters:
 
 testlist: list = [ "clear", "use", "set", "exit", "prompt" ]
 
-string = ''
-char = ''
-print_string = ''
-check = 0
-while True:
-    string+=char
-    try:
-        if char and char != ' ':
-            nuisance = Splitters.quote(string)
-            if args(nuisance, 0) in testlist:
-                nuisance[0] = '[green]'+nuisance[0]+"[/]"
-                print_string = f'{" ".join(nuisance)}|'
-            else:
-                nuisance[0] = '[red]'+nuisance[0]+'[/]'
-                print_string = f'{" ".join(nuisance)}|'
-        elif check != 0 and char != ' ':
-            if args(Splitters.quote(string), 0):
-                test = Splitters.quote(string)
-                test[0] = "[green]" if test[0] in testlist else "[red]"+test[0]+"[/]"
-                print_string = " ".join(test)+"| "
-        elif char == " ":
-            print(string+' |',end=' \r')
-        Console.print(print_string, end="\r")
-    except:
-        pass
-    char = readchar.readchar_linux.readchar()
-    check = 1
-    #print(len(string))
-    if char == '\r': break
-    if ord(char) == 127:
-        char=''
-        print(" "*len(string), end='\r')
+class _Getch:
+    """Gets a single character from standard input.  Does not echo to the
+screen."""
+    def __init__(self):
         try:
-            string = list(string)
-            string.pop()
-            string = ''.join(string)
-            continue
-        except IndexError:
-            string = ''
-            continue
-print("\n"+string)
+            self.impl = _GetchWindows()
+        except ImportError:
+            self.impl = _GetchUnix()
+
+    def __call__(self): return self.impl()
+
+
+class _GetchUnix:
+    def __init__(self):
+        import tty, sys
+
+    def __call__(self):
+        import sys, tty, termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+
+class _GetchWindows:
+    def __init__(self):
+        import msvcrt
+
+    def __call__(self):
+        import msvcrt
+        return msvcrt.getch()
+
+class Reader:
+    def __init__(self, valid_cmd_list: list)-> None:
+        self.valid_cmd_list = valid_cmd_list
+    def _prettify(self, string: str) -> str:
+        splitted: list[str] = Splitters.quote(string)
+        for idx, data in enumerate(splitted):
+            if idx == 0:
+                if args(splitted, 0) in self.valid_cmd_list:
+                    splitted[0] = "[green]"+splitted[0]+"[/]"
+                else:
+                    splitted[0] = "[red]"+splitted[0]+"[/]"
+            else:
+                if data.startswith('-'):
+                    splitted[idx] = "[blue]"+splitted[idx]+"[/]"
+        else: pass
+        #print(f'\n{splitted}')
+        return ' '.join(splitted)
+    
+    def read(self, prompt: str = ">") -> str:
+        req_line_buff_len: int = 0
+        getch = _Getch()
+        string: str = ''
+        char: str = ''
+        while True:
+            print(" "*(req_line_buff_len*2), end="\r")
+            Console.print(f'\r{prompt} {self._prettify(string)}{" " if args(string, -1) == " " else ""}', end="")
+            char = getch()
+            if char == '\r': break
+            if ord(char) == 4: raise EOFError()
+            if ord(char) == 3: raise KeyboardInterrupt()
+            if ord(char) == 127:
+                req_line_buff_len = len(string)
+                try:
+                    string_break = list(string)
+                    string_break.pop()
+                    string=''.join(string_break)
+                    del string_break
+                except IndexError:
+                    string=''
+                    pass
+                finally:
+                    continue
+            string+=char
+        print()
+        return string
+
+if __name__ == '__main__':
+    reader = Reader(testlist)
+    try:
+        print(reader.read("\[probeKit]$>"))
+    except EOFError():
+        pass
