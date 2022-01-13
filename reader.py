@@ -1,4 +1,5 @@
 from rich.console import Console
+from sys import stdout
 Console = Console()
 
 def args(value: list, pos: int) -> str:
@@ -84,10 +85,14 @@ class Splitters:
             previous_state = check
             if ch == '\'':
                 if check == 2: pass
-                elif check == 1: check = 0
+                elif check == 1:
+                    quote_string+=ch
+                    check = 0
                 elif check == 0: check = 1
             if ch == '"':
-                if check == 2: check = 0
+                if check == 2:
+                    quote_string+=ch
+                    check = 0
                 elif check == 1: pass
                 elif check == 0: check = 2
             if check == 0:
@@ -101,10 +106,11 @@ class Splitters:
                         form_string=''
             else:
                 if form_string: str_container.append(form_string); form_string=''
-                if check == 2 and ch == '"': pass
-                elif check == 1 and ch == '\'': pass
+                # if check == 2 and ch == '"': pass
+                # elif check == 1 and ch == '\'': pass
                 else: quote_string+=ch
         if form_string: str_container.append(form_string)
+        if quote_string: str_container.append(quote_string)
         return str_container
 
 testlist: list = [ "clear", "use", "set", "exit", "prompt" ]
@@ -146,19 +152,29 @@ class _GetchWindows:
         return msvcrt.getch()
 
 class Reader:
-    def __init__(self, valid_cmd_list: list)-> None:
-        self.valid_cmd_list = valid_cmd_list
+    def __init__(self, valid_cmd_list: list, _history_buff: list = [])-> None:
+        self.valid_cmd_list: list = valid_cmd_list
+        self.history_buff: list = _history_buff
     def _prettify(self, string: str) -> str:
         splitted: list[str] = Splitters.quote(string)
         for idx, data in enumerate(splitted):
-            if idx == 0:
+            # print()
+            # print(data)
+            # print()
+            if idx == 0 and not ('"' in args(splitted, 0) or '\'' in args(splitted, 0)):
+                # print(data)
                 if args(splitted, 0) in self.valid_cmd_list:
                     splitted[0] = "[green]"+splitted[0]+"[/]"
                 else:
                     splitted[0] = "[red]"+splitted[0]+"[/]"
             else:
-                if data.startswith('-'):
+                if data.startswith('-') and " " not in data:
                     splitted[idx] = "[blue]"+splitted[idx]+"[/]"
+                if data.startswith('"'):
+                    if data.endswith('"'):
+                        splitted[idx] = "[bold yellow]"+splitted[idx]+"[/]"
+                    else:
+                        splitted[idx] = "[bold red]"+splitted[idx]+"[/]"
         else: pass
         #print(f'\n{splitted}')
         return ' '.join(splitted)
@@ -168,11 +184,16 @@ class Reader:
         getch = _Getch()
         string: str = ''
         char: str = ''
+        current: int = len(self.history_buff)-1
         while True:
-            print(" "*(req_line_buff_len*2), end="\r")
+            stdout.write('\033[2K\033[1G')
+            # self._prettify(string)
             Console.print(f'\r{prompt} {self._prettify(string)}{" " if args(string, -1) == " " else ""}', end="")
             char = getch()
-            if char == '\r': break
+            # print(ord(char))
+            if char == '\r':
+                self.history_buff.append(string)
+                break
             if ord(char) == 4: raise EOFError()
             if ord(char) == 3: raise KeyboardInterrupt()
             if ord(char) == 127:
@@ -187,6 +208,7 @@ class Reader:
                     pass
                 finally:
                     continue
-            string+=char
+            if char.isprintable():
+                string+=char
         print()
         return string
