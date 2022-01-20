@@ -1,5 +1,4 @@
 from rich.console import Console
-from sys import stdout
 Console = Console()
 
 def args(value: list, pos: int) -> str:
@@ -101,8 +100,8 @@ class Splitters:
                     quote_string = ''
                 elif ch != delimiter and previous_state == check: form_string+=ch
                 else:
-                    if form_string:
-                        str_container.append(form_string)
+                    # if form_string:
+                        str_container.append(form_string+ch)
                         form_string=''
             else:
                 if form_string: str_container.append(form_string); form_string=''
@@ -155,29 +154,34 @@ class Reader:
     def __init__(self, valid_cmd_list: list, _history_buff: list = [])-> None:
         self.valid_cmd_list: list = valid_cmd_list
         self.history_buff: list = _history_buff
-    def _prettify(self, string: str) -> str:
+    
+    def _prettify(self, string: str):
         splitted: list[str] = Splitters.quote(string)
-        for idx, data in enumerate(splitted):
-            # print()
-            # print(data)
-            # print()
-            if idx == 0 and not ('"' in args(splitted, 0) or '\'' in args(splitted, 0)):
-                # print(data)
-                if args(splitted, 0) in self.valid_cmd_list:
-                    splitted[0] = "[green]"+splitted[0]+"[/]"
+        splitted_dup = splitted.copy()
+        check = 0
+        for idx, data in enumerate(splitted_dup):
+            if check == 0:
+                if data.strip() in self.valid_cmd_list:
+                    splitted[idx] = "[green]"+data+"[/]"
+                    check = 1
                 else:
-                    splitted[0] = "[red]"+splitted[0]+"[/]"
+                    splitted[idx] = "[red]"+data+"[/]"
             else:
-                if data.startswith('-') and " " not in data:
-                    splitted[idx] = "[blue]"+splitted[idx]+"[/]"
-                if data.startswith('"'):
-                    if data.endswith('"'):
-                        splitted[idx] = "[bold yellow]"+splitted[idx]+"[/]"
+                if data.strip().startswith('-'):
+                    splitted[idx] = "[blue]"+data+"[/]"
+                elif data.strip().startswith('\''):
+                    if data.strip().endswith('\''):
+                        splitted[idx] = "[bold yellow]"+data+"[/]"
                     else:
-                        splitted[idx] = "[bold red]"+splitted[idx]+"[/]"
-        else: pass
-        #print(f'\n{splitted}')
-        return ' '.join(splitted)
+                        splitted[idx] = "[bold red]"+data+"[/]"
+
+                elif data.strip().startswith('"'):
+                    if data.strip().endswith('"'):
+                        splitted[idx] = "[bold yellow]"+data+"[/]"
+                    else:
+                        splitted[idx] = "[bold red]"+data+"[/]"
+
+        return ''.join(splitted)
     
     def read(self, prompt: str = ">") -> str:
         req_line_buff_len: int = 0
@@ -186,9 +190,9 @@ class Reader:
         char: str = ''
         current: int = len(self.history_buff)-1
         while True:
-            stdout.write('\033[2K\033[1G')
+            print('\033[2K\033[1G', end='')
             # self._prettify(string)
-            Console.print(f'\r{prompt} {self._prettify(string)}{" " if args(string, -1) == " " else ""}', end="")
+            Console.print(f'\r{prompt} {self._prettify(string)}', end="")
             char = getch()
             # print(ord(char))
             if char == '\r':
