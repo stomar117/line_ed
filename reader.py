@@ -1,10 +1,9 @@
-from rich.console import Console
-Console = Console()
+from rich import console, traceback
+Console = console.Console()
 
 def args(value: list, pos: int) -> str:
     try: return str(value[int(pos)])
     except Exception: return ''
-from rich import traceback
 
 traceback.install()
 
@@ -47,36 +46,10 @@ class Splitters:
             return None
 
     @staticmethod
-    def dbreaker(string: str, delimiter: str = ' ') -> list:
-        if delimiter.isalnum(): raise ValueError('delimitter cannot be an alpha-numeric character')
-        if delimiter not in string: return [string]
-        form_string: str = ''
-        str_container: list = []
-        check: int = 0
-        for ch in string:
-            if ch == '\'':
-                if check == 2: pass
-                elif check == 1: check = 0
-                elif check == 0: check = 1
-            if ch == '"':
-                if check == 2: check = 0
-                elif check == 1: pass
-                elif check == 0: check = 2
-            if ch == delimiter and check == 0: pass
-            else: form_string+=ch
-            if check == 0:
-                if ch == delimiter:
-                    str_container.append(form_string)
-                    form_string=''
-        if form_string:
-            str_container.append(form_string)
-        return str_container
-
-    @staticmethod
     def quote(string: str, delimiter: str = ' ') -> list:
         if delimiter.isalnum(): raise ValueError('delimiter cannot be an alpha-numeric character')
         form_string: str = ''
-        str_container: list = []
+        str_container: list[str] = []
         quote_string: str = ''
         check: int = 0
         previous_state: int = 0
@@ -87,13 +60,17 @@ class Splitters:
                 elif check == 1:
                     quote_string+=ch
                     check = 0
-                elif check == 0: check = 1
+                elif check == 0:
+                    quote_string+=ch
+                    check = 1
             if ch == '"':
-                if check == 2:
+                if check == 1: pass
+                elif check == 2:
                     quote_string+=ch
                     check = 0
-                elif check == 1: pass
-                elif check == 0: check = 2
+                elif check == 0:
+                    quote_string+=ch
+                    check = 2
             if check == 0:
                 if previous_state != check:
                     str_container.append(quote_string)
@@ -107,14 +84,15 @@ class Splitters:
                 if form_string: str_container.append(form_string); form_string=''
                 # if check == 2 and ch == '"': pass
                 # elif check == 1 and ch == '\'': pass
-                else: quote_string+=ch
+                else:
+                    if len(quote_string.strip()) == 1 and ch in '\'"': pass
+                    else: quote_string+=ch
         if form_string: str_container.append(form_string)
         if quote_string: str_container.append(quote_string)
         return str_container
 
 class _Getch:
-    """Gets a single character from standard input.  Does not echo to the
-screen."""
+    """Gets a single character from standard input.  Does not echo to the screen."""
     def __init__(self):
         try:
             self.impl = _GetchWindows()
@@ -122,7 +100,6 @@ screen."""
             self.impl = _GetchUnix()
 
     def __call__(self): return self.impl()
-
 
 class _GetchUnix:
     def __init__(self):
@@ -138,7 +115,6 @@ class _GetchUnix:
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
-
 
 class _GetchWindows:
     def __init__(self):
@@ -159,22 +135,24 @@ class Reader:
         check = 0
         for idx, data in enumerate(splitted_dup):
             if check == 0:
-                if data.strip() in self.valid_cmd_list:
-                    splitted[idx] = "[green]"+data+"[/]"
-                    check = 1
-                else:
-                    splitted[idx] = "[red]"+data+"[/]"
+                if data.strip():
+                    if data.strip() in self.valid_cmd_list:
+                        splitted[idx] = "[green]"+data+"[/]"
+                        check = 1
+                    else:
+                        splitted[idx] = "[red]"+data+"[/]"
+                        check = 1
             else:
                 if data.strip().startswith('-'):
                     splitted[idx] = "[blue]"+data+"[/]"
                 elif data.strip().startswith('\''):
-                    if data.strip().endswith('\''):
+                    if data.strip().endswith('\'') and len(data.strip()) > 1:
                         splitted[idx] = "[bold yellow]"+data+"[/]"
                     else:
                         splitted[idx] = "[bold red]"+data+"[/]"
 
                 elif data.strip().startswith('"'):
-                    if data.strip().endswith('"'):
+                    if data.strip().endswith('"') and len(data.strip()) > 1:
                         splitted[idx] = "[bold yellow]"+data+"[/]"
                     else:
                         splitted[idx] = "[bold red]"+data+"[/]"
