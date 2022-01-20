@@ -112,8 +112,6 @@ class Splitters:
         if quote_string: str_container.append(quote_string)
         return str_container
 
-testlist: list = [ "clear", "use", "set", "exit", "prompt" ]
-
 class _Getch:
     """Gets a single character from standard input.  Does not echo to the
 screen."""
