@@ -86,7 +86,11 @@ class Splitters:
                 # if check == 2 and ch == '"': pass
                 # elif check == 1 and ch == '\'': pass
                 else:
-                    if len(quote_string.strip()) == 1 and ch in '\'"': pass
+                    if len(quote_string.strip()) == 1:
+                        if ch == '\'' and quote_string == '\'': pass
+                        elif ch == '"' and quote_string == '"': pass
+                        else: quote_string+=ch
+
                     else: quote_string+=ch
         if form_string: str_container.append(form_string)
         if quote_string: str_container.append(quote_string)
