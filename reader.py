@@ -123,7 +123,7 @@ class _GetchUnix:
         return ch
 
 class _GetchWindows:
-    def __init__(self):
+    def __init__(self) -> None:
         import msvcrt
 
     def __call__(self):
@@ -134,8 +134,15 @@ class Reader:
     def __init__(self, valid_cmd_list: list, _history_buff: list = [])-> None:
         self.valid_cmd_list: list = valid_cmd_list
         self.history_buff: list = _history_buff
+
+    def _paint_word(self, color: str, string: str) -> str:
+        strsplit: list[str] = string.split(' ')
+        strsplit[0]=f'[{color}]'+strsplit[0]+'[/]'
+        string=' '.join(strsplit)
+        del strsplit
+        return string
     
-    def _prettify(self, string: str):
+    def _prettify(self, string: str) -> str:
         for x in '({[<':
             if x in string:
                 for bracketed in Splitters.bracket(string):
@@ -152,25 +159,27 @@ class Reader:
             if check == 0:
                 if data.strip():
                     if data.strip() in self.valid_cmd_list:
-                        splitted[idx] = f"[{config.valid_command}]"+data+"[/]"
+                        # splitted[idx] = f"[{config.valid_command}]"+data+"[/]"
+                        splitted[idx] = self._paint_word(config.valid_command, data)
                         check = 1
                     else:
-                        splitted[idx] = f"[{config.invalid_command}]"+data+"[/]"
+                        # splitted[idx] = f"[{config.invalid_command}]"+data+"[/]"
+                        splitted[idx] = self._paint_word(config.invalid_command, data)
                         check = 1
             else:
                 if data.strip().startswith('-'):
-                    splitted[idx] = f"[{config.flags}]"+data+"[/]"
+                    splitted[idx] = self._paint_word(config.flags, data)
                 elif data.strip().startswith('\''):
                     if data.strip().endswith('\'') and len(data.strip()) > 1:
-                        splitted[idx] = f"[{config.quoted_string_complete}]"+data+"[/]"
+                        splitted[idx] = self._paint_word(config.quoted_string_complete, data)
                     else:
-                        splitted[idx] = f"[{config.quoted_string_incomplete}]"+data+"[/]"
+                        splitted[idx] = self._paint_word(config.quoted_string_incomplete, data)
 
                 elif data.strip().startswith('"'):
                     if data.strip().endswith('"') and len(data.strip()) > 1:
-                        splitted[idx] = f"[{config.quoted_string_complete}]"+data+"[/]"
+                        splitted[idx] = self._paint_word(config.quoted_string_complete, data)
                     else:
-                        splitted[idx] = f"[{config.quoted_string_incomplete}]"+data+"[/]"
+                        splitted[idx] = self._paint_word(config.quoted_string_incomplete, data)
 
         return ''.join(splitted)
     
@@ -304,7 +313,7 @@ class Reader:
         string = string_bc+string_ac
         print()
         return string
-    
+
     def _read_windows(self, prompt) -> str:
         getch = _Getch()
         string: str = ''
