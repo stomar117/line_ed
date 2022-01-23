@@ -213,12 +213,19 @@ class Reader:
                 self.history_buff.append(string)
                 break
             if ord(char) == 4:
-                print('^D')
-                raise EOFError()
+                if string_ac:
+                    if len(string_ac) > 1:
+                        string_ac=string_ac[1::]
+                    else:
+                        string_ac=''
+                elif string_bc:
+                    string_ac=string_bc=''
+                else:
+                    print('^D')
+                    raise EOFError()
             if ord(char) == 3:
                 if string_ac+string_bc:
-                    string_ac=''
-                    string_bc=''
+                    string_ac=string_bc=''
                     print('^C')
                 else:
                     raise KeyboardInterrupt()
