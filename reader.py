@@ -15,7 +15,7 @@ class Splitters:
         closebr: str = ')}]>'
         if bropen in openbr: brclose = closebr[openbr.find(bropen)]
         else:
-            print("Not a valid bracket...")
+            # print("Not a valid bracket...")
             return None
         str_container: list = []
         form_string: str = ''
@@ -30,7 +30,7 @@ class Splitters:
                 nbuff-=1
                 if nbuff == 0: check = 0
                 if nbuff < 0:
-                    print("Extra closing bracket found. Qutting...")
+                    # print("Extra closing bracket found. Qutting...")
                     check = 1
                     break
             if check == 0:
@@ -43,8 +43,8 @@ class Splitters:
                     form_string = ''
         if check == 0: return str_container
         else:
-            if nbuff >= 0: print("Extra opening bracket found. Quitting...")
-            return None
+            # if nbuff >= 0: print("Extra opening bracket found. Quitting...")
+            return []
 
     @staticmethod
     def quote(string: str, delimiter: str = ' ') -> list:
@@ -135,10 +135,19 @@ class Reader:
         self.history_buff: list = _history_buff
     
     def _prettify(self, string: str):
+        for x in '({[<':
+            if x in string:
+                for bracketed in Splitters.bracket(string):
+                    string=string.replace(bracketed, "[bold]"+bracketed+"[/]")
         splitted: list[str] = Splitters.quote(string)
         splitted_dup = splitted.copy()
         check = 0
         for idx, data in enumerate(splitted_dup):
+            if data.strip().startswith('#'):
+                splitted[idx]="[cyan]"+splitted_dup[idx]+"[/]"
+                for x in range(idx, len(splitted_dup)-1):
+                    splitted[x]="[cyan]"+splitted_dup[x]+"[/]"
+                break
             if check == 0:
                 if data.strip():
                     if data.strip() in self.valid_cmd_list:
@@ -186,8 +195,16 @@ class Reader:
             if char == '\r':
                 self.history_buff.append(string)
                 break
-            if ord(char) == 4: raise EOFError()
-            if ord(char) == 3: raise KeyboardInterrupt()
+            if ord(char) == 4:
+                print('^D')
+                raise EOFError()
+            if ord(char) == 3:
+                if string_ac+string_bc:
+                    string_ac=''
+                    string_bc=''
+                    print('^C')
+                else:
+                    raise KeyboardInterrupt()
             if ord(char) == 27:
                 initializer = getch()
                 if ord(initializer) == 91:
@@ -204,7 +221,7 @@ class Reader:
                                 temp_string_buff = ''
                                 current=len(self.history_buff)-1
                             else:
-                                string_bc = last_buff
+                                string_bc = args(string, -1)
                                 current = len(self.history_buff)-1
                         string_ac=''
                     elif direction == 'B':
