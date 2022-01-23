@@ -1,0 +1,9 @@
+{
+    "valid_command": "bold green",
+    "invalid_command": "red",
+    "quoted_string_complete": "bold yellow",
+    "quoted_string_incomplete": "bold red",
+    "flags": "blue",
+    "bracketed": "bold",
+    "comment": "cyan"
+}

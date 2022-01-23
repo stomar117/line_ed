@@ -1,5 +1,6 @@
 from rich import console, traceback
 from platform import platform
+import _config as config
 Console = console.Console()
 
 def args(value: list, pos: int) -> str:
@@ -138,38 +139,38 @@ class Reader:
         for x in '({[<':
             if x in string:
                 for bracketed in Splitters.bracket(string):
-                    string=string.replace(bracketed, "[bold]"+bracketed+"[/]")
+                    string=string.replace(bracketed, f"[{config.bracketed}]"+bracketed+"[/]")
         splitted: list[str] = Splitters.quote(string)
         splitted_dup = splitted.copy()
         check = 0
         for idx, data in enumerate(splitted_dup):
             if data.strip().startswith('#'):
-                splitted[idx]="[cyan]"+splitted_dup[idx]+"[/]"
+                splitted[idx]=f"[{config.comment}]"+splitted_dup[idx]+"[/]"
                 for x in range(idx, len(splitted_dup)-1):
-                    splitted[x]="[cyan]"+splitted_dup[x]+"[/]"
+                    splitted[x]=f"[{config.comment}]"+splitted_dup[x]+"[/]"
                 break
             if check == 0:
                 if data.strip():
                     if data.strip() in self.valid_cmd_list:
-                        splitted[idx] = "[green]"+data+"[/]"
+                        splitted[idx] = f"[{config.valid_command}]"+data+"[/]"
                         check = 1
                     else:
-                        splitted[idx] = "[red]"+data+"[/]"
+                        splitted[idx] = f"[{config.invalid_command}]"+data+"[/]"
                         check = 1
             else:
                 if data.strip().startswith('-'):
-                    splitted[idx] = "[blue]"+data+"[/]"
+                    splitted[idx] = f"[{config.flags}]"+data+"[/]"
                 elif data.strip().startswith('\''):
                     if data.strip().endswith('\'') and len(data.strip()) > 1:
-                        splitted[idx] = "[bold yellow]"+data+"[/]"
+                        splitted[idx] = f"[{config.quoted_string_complete}]"+data+"[/]"
                     else:
-                        splitted[idx] = "[bold red]"+data+"[/]"
+                        splitted[idx] = f"[{config.quoted_string_incomplete}]"+data+"[/]"
 
                 elif data.strip().startswith('"'):
                     if data.strip().endswith('"') and len(data.strip()) > 1:
-                        splitted[idx] = "[bold yellow]"+data+"[/]"
+                        splitted[idx] = f"[{config.quoted_string_complete}]"+data+"[/]"
                     else:
-                        splitted[idx] = "[bold red]"+data+"[/]"
+                        splitted[idx] = f"[{config.quoted_string_incomplete}]"+data+"[/]"
 
         return ''.join(splitted)
     
