@@ -1,5 +1,6 @@
 from rich import console, traceback
 from platform import platform
+from os import path
 import _config as config
 Console = console.Console()
 
@@ -180,6 +181,12 @@ class Reader:
                         splitted[idx] = self._paint_word(config.quoted_string_complete, data)
                     else:
                         splitted[idx] = self._paint_word(config.quoted_string_incomplete, data)
+                
+                elif path.exists(data.strip()):
+                    splitted[idx] = self._paint_word(config.path_exists, data)
+                
+                elif data.strip().isdecimal():
+                    splitted[idx] = self._paint_word('blue', data)
 
         return ''.join(splitted)
     
