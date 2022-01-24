@@ -10,6 +10,17 @@ def args(value: list, pos: int) -> str:
     try: return str(value[int(pos)])
     except Exception: return ''
 
+def isfloat(string: str)->bool:
+    ssplit = string.split('.')
+    length: int = len(ssplit)
+    FloatList: list = []
+    if 0 < length <= 2:
+        for x in ssplit:
+            FloatList.append(x.isdecimal())
+        if False in FloatList: return False
+        else: return True
+    else: return False
+
 traceback.install()
 
 class Reader:
@@ -25,9 +36,9 @@ class Reader:
         return string
     
     def _prettify(self, string: str) -> str:
-        for x in '({[<':
+        for x in '({<':
             if x in string:
-                for bracketed in Splitters.bracket(string):
+                for bracketed in Splitters.bracket(string, bropen=x):
                     string=string.replace(bracketed, f"[{config.bracketed}]"+bracketed+"[/]")
         splitted: list[str] = Splitters.quote(string)
         splitted_dup = splitted.copy()
@@ -66,9 +77,9 @@ class Reader:
                 elif path.exists(data.strip()):
                     splitted[idx] = self._paint_word(config.path_exists, data)
                 
-                elif data.strip().isdecimal():
-                    splitted[idx] = self._paint_word('blue', data)
-
+                elif isfloat(data.strip()):
+                    splitted[idx] = self._paint_word(config.integer, data)
+        string=''
         return ''.join(splitted)
     
     def read(self, prompt: str = '>') -> str:
@@ -85,7 +96,6 @@ class Reader:
         while True:
             string = string_bc+string_ac
             print('\033[2K\033[1G', end='')
-            # self._prettify(string)
             Console.print(f'\r{prompt} {self._prettify(string_bc+string_ac)}', end="\r")
             Console.print(f'\r{prompt} {self._prettify(string_bc)}', end="")
             char = getch()
@@ -167,6 +177,7 @@ class Reader:
                         string_bc=''
 
                     elif ord(direction) == 70:
+                        ## END
                         string_bc+=string_ac
                         string_ac=''
 
