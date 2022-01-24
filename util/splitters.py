@@ -85,3 +85,29 @@ class Splitters:
         if form_string: str_container.append(form_string)
         if quote_string: str_container.append(quote_string)
         return str_container
+
+    @staticmethod
+    def dbreaker(string: str, delimiter: str = ' ') -> list:
+        if delimiter.isalnum(): raise ValueError('delimitter cannot be an alpha-numeric character')
+        if delimiter not in string: return [string]
+        form_string: str = ''
+        str_container: list = []
+        check: int = 0
+        for ch in string:
+            if ch == '\'':
+                if check == 2: pass
+                elif check == 1: check = 0
+                elif check == 0: check = 1
+            if ch == '"':
+                if check == 2: check = 0
+                elif check == 1: pass
+                elif check == 0: check = 2
+            if ch == delimiter and check == 0: pass
+            else: form_string+=ch
+            if check == 0:
+                if ch == delimiter:
+                    str_container.append(form_string+ch)
+                    form_string=''
+        if form_string:
+            str_container.append(form_string)
+        return str_container
