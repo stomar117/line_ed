@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.9
 
-from reader import Reader
+from reader import read
 
 valid_commands = [
     "use", 
@@ -19,11 +19,11 @@ valid_commands = [
     "unset"
 ]
 
-reader = Reader(valid_commands)
+reader = read(valid_commands)
 try:
     history_buff: list = []
     while True:
-        command = reader.read("\[test_prompt] ?>")
+        command = reader("\[test_prompt] ?>")
         if command == "exit":
             break
         elif command == "clear":
