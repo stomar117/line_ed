@@ -29,11 +29,11 @@ class Reader:
         self.history_buff: list = _history_buff
 
     def _paint_word(self, color: str, string: str) -> str:
-        strsplit: list[str] = string.split(' ')
-        strsplit[0]=f'[{color}]'+strsplit[0]+'[/]'
-        string=' '.join(strsplit)
-        del strsplit
-        return string
+        if string[-1] == ' ':
+            needed_string = string[:-1:]
+            needed_string=f'[{color}]'+needed_string+'[/]'
+            return needed_string+' '
+        else: return f'[{color}]'+string+'[/]'
     
     def _prettify(self, string: str) -> str:
         for x in '({<':
