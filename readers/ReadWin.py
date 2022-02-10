@@ -12,8 +12,7 @@ class ReadWin(ReadUtils):
         temp_string_buff: str = ''
         while True:
             last_buff: str = self.args(self.history_buff, -1)
-            print('\033[2K\033[1G', end='')
-            Console.print(f'\r{prompt} {self._prettify(string)}', end="")
+            self._pretty_print(prompt, string, '')
             b_char = getch()
             try:
                 char = bytes.decode(b_char, 'utf-8')

@@ -3,7 +3,7 @@ from platform import platform
 from os import path
 import _config as config
 from util.splitters import Splitters
-Console = console.Console()
+Console = console.Console(highlight=False)
 
 traceback.install()
 
@@ -36,12 +36,12 @@ class ReadUtils:
             scln_ck = 1
         if string[-1] == ' ':
             needed_string = string[:-1:]
-            needed_string=f'[{color}]'+needed_string+'[/]'
+            needed_string=f'[{color}]'+needed_string+('[/]' if not string.endswith('\\') or string.endswith('\\\\') else '\[/]')
             return needed_string+' '
         else:
             if scln_ck:
                 return f'[{color}]'+self._prettify(string)+'[/];'
-            return f'[{color}]'+string+'[/]'
+            return f'[{color}]'+string+('[/]' if not string.endswith('\\') or string.endswith('\\\\') else '\[/]')
     
     def _prettify(self, string: str) -> str:
         for x in '({<':
