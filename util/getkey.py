@@ -37,5 +37,24 @@ class getkey:
 
     def _getkey_win(self) -> str:
         key = Getch()()
-        key.decode()
-        return key
+        try:
+            keypress = key.decode()
+            if keypress == '\r': return 'EOL'
+            elif ord(keypress) == 4: return 'EOF'
+            elif ord(keypress) == 3: return 'KBDINT'
+            elif ord(keypress) == 8: return 'BACK'
+            elif ord(keypress) == 127: return 'C-BCK'
+            elif ord(keypress) == 9: return 'TAB'
+            return keypress
+        except UnicodeDecodeError:
+            if key == b'\xe0':
+                newkey = Getch()()
+                if newkey.decode() == 'H': return 'UPKY'
+                elif newkey.decode() == 'P': return 'DWKY'
+                elif newkey.decode() == 'K': return 'LTKY'
+                elif newkey.decode() == 'M': return 'RTKY'
+                elif newkey.decode() == 'G': return 'HOME'
+                elif newkey.decode() == 'O': return 'END'
+                elif newkey.decode() == 'S': return 'DEL'
+                else: return newkey.decode()
+            else: return str(key)
