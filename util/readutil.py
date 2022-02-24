@@ -1,9 +1,10 @@
+from sys import stdout
 from rich import console, traceback
-from platform import platform
-from os import path
+from os import path, get_terminal_size
+from math import ceil
 import _config as config
 from util.splitters import Splitters
-Console = console.Console(highlight=False)
+Console = console.Console(highlight=False, soft_wrap=True,)
 
 traceback.install()
 
@@ -94,7 +95,16 @@ class ReadUtils:
         return ''.join(spilt_from_scln)
     
     def _pretty_print(self, prompt: str, string_a: str, string_b: str):
+        term_col_size: float = float(get_terminal_size().columns)
+        string_len: float = float(len(prompt+' '+string_a+string_b))
+        line_count: int = ceil(string_len/term_col_size)
+        if len((string_a+string_b)[int(term_col_size*line_count)::]) == 1 or ((string_a+string_b) if string_a+string_b else 'x')[-1] in '\t ':
+            line_count=line_count-1
         print('\033[2K\033[1G', end='')
+        for _ in range(line_count-1):
+            print('\033[2K\033[1G', end='')
+            print('\033[A', end='')
+            stdout.flush()
         if '[' in (string_a+string_b):
             print(f'{prompt} {string_a+string_b}', end='\r')
             print(f'\r{prompt} {string_a}', end='')
