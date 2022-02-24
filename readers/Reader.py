@@ -115,7 +115,7 @@ class Read(ReadUtils):
                 if string_bc:
                     strlist: list = string_bc.split(' ')
                     if strlist[-1]:
-                        strlist=strlist.pop()
+                        strlist.pop()
                         string_bc=' '.join(strlist)
                     else:
                         for x in range(len(strlist)-1,-1, -1):
