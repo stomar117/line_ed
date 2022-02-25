@@ -45,6 +45,7 @@ class ReadUtils:
             return f'[{color}]'+string+('[/]' if not string.endswith('\\') or string.endswith('\\\\') else '\[/]')
     
     def _prettify(self, string: str) -> str:
+        if not self.valid_cmd_list: return string
         for x in '({<':
             if x in string:
                 for bracketed in Splitters.bracket(string, bropen=x):

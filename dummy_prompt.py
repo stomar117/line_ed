@@ -20,6 +20,7 @@ valid_commands = [
 ]
 
 reader = read(valid_commands)
+# reader = read()
 try:
     history_buff: list = []
     while True:
