@@ -2,7 +2,7 @@ from sys import stdout
 from rich import console, traceback
 from os import path, get_terminal_size
 from math import ceil
-import _config as config
+from _config import colors
 from util.splitters import Splitters
 Console = console.Console(highlight=False, soft_wrap=True,)
 
@@ -49,7 +49,7 @@ class ReadUtils:
         for x in '({<':
             if x in string:
                 for bracketed in Splitters.bracket(string, bropen=x):
-                    string=string.replace(bracketed, f"[{config.bracketed}]"+bracketed+"[/]")
+                    string=string.replace(bracketed, f"[{colors.bracketed}]"+bracketed+"[/]")
         spilt_from_scln: list[str] = Splitters.dbreaker(string, delimiter=';')
         for index, string in enumerate(spilt_from_scln):
             # if self.args(string, -1) == ';':
@@ -58,40 +58,40 @@ class ReadUtils:
             check = 0
             for idx, data in enumerate(splitted_dup):
                 if data.strip().startswith('#'):
-                    splitted[idx]=f"[{config.comment}]"+splitted_dup[idx]+"[/]"
+                    splitted[idx]=f"[{colors.comment}]"+splitted_dup[idx]+"[/]"
                     for x in range(idx, len(splitted_dup)-1):
-                        splitted[x]=f"[{config.comment}]"+splitted_dup[x]+"[/]"
+                        splitted[x]=f"[{colors.comment}]"+splitted_dup[x]+"[/]"
                     break
                 if check == 0:
                     if data.strip():
                         if data.strip() in self.valid_cmd_list:
-                            # splitted[idx] = f"[{config.valid_command}]"+data+"[/]"
-                            splitted[idx] = self._paint_word(config.valid_command, data)
+                            # splitted[idx] = f"[{colors.valid_command}]"+data+"[/]"
+                            splitted[idx] = self._paint_word(colors.valid_command, data)
                             check = 1
                         else:
-                            # splitted[idx] = f"[{config.invalid_command}]"+data+"[/]"
-                            splitted[idx] = self._paint_word(config.invalid_command, data)
+                            # splitted[idx] = f"[{colors.invalid_command}]"+data+"[/]"
+                            splitted[idx] = self._paint_word(colors.invalid_command, data)
                             check = 1
                 else:
                     if data.strip().startswith('-'):
-                        splitted[idx] = self._paint_word(config.flags, data)
+                        splitted[idx] = self._paint_word(colors.flags, data)
                     elif data.strip().startswith('\''):
                         if data.strip().endswith('\'') and len(data.strip()) > 1:
-                            splitted[idx] = self._paint_word(config.quoted_string_complete, data)
+                            splitted[idx] = self._paint_word(colors.quoted_string_complete, data)
                         else:
-                            splitted[idx] = self._paint_word(config.quoted_string_incomplete, data)
+                            splitted[idx] = self._paint_word(colors.quoted_string_incomplete, data)
 
                     elif data.strip().startswith('"'):
                         if data.strip().endswith('"') and len(data.strip()) > 1:
-                            splitted[idx] = self._paint_word(config.quoted_string_complete, data)
+                            splitted[idx] = self._paint_word(colors.quoted_string_complete, data)
                         else:
-                            splitted[idx] = self._paint_word(config.quoted_string_incomplete, data)
+                            splitted[idx] = self._paint_word(colors.quoted_string_incomplete, data)
                 
                     elif path.exists(data.strip()):
-                        splitted[idx] = self._paint_word(config.path_exists, data)
+                        splitted[idx] = self._paint_word(colors.path_exists, data)
                 
                     elif self.isfloat(data.strip()):
-                        splitted[idx] = self._paint_word(config.integer, data)
+                        splitted[idx] = self._paint_word(colors.integer, data)
             spilt_from_scln[index] = ''.join(splitted)
         return ''.join(spilt_from_scln)
     

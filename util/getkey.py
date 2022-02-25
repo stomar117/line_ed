@@ -40,12 +40,14 @@ class getkey:
         try:
             keypress = key.decode()
             if keypress == '\r': return 'EOL'
-            elif ord(keypress) == 4: return 'EOF'
-            elif ord(keypress) == 3: return 'KBDINT'
             elif ord(keypress) == 8: return 'BACK'
-            elif ord(keypress) == 127: return 'C-BCK'
+            elif ord(keypress) == 127: return 'C-BACK'
             elif ord(keypress) == 9: return 'TAB'
-            return keypress
+            if keypress.isprintable() and len(keypress) == 1:
+                return keypress
+            else:
+                if chr(ord(keypress)+64).isalpha:
+                    return f'C-{chr(ord(keypress)+64)}'
         except UnicodeDecodeError:
             if key == b'\xe0':
                 newkey = Getch()()

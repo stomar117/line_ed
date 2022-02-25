@@ -1,5 +1,6 @@
 from util.readutil import ReadUtils
 from util.getkey import getkey
+from _config import bindings
 from sys import stdin
 
 class Read(ReadUtils):
@@ -19,10 +20,10 @@ class Read(ReadUtils):
             keypress = getkey()()
             char = keypress if keypress.isprintable() else ''
             stdin.flush()
-            if keypress == 'EOL':
+            if keypress == bindings.end_of_line:
                 self.history_buff.append(string)
                 break
-            if keypress == 'EOF':
+            if keypress == bindings.end_of_file:
                 if string_ac:
                     if len(string_ac) > 1:
                         string_ac=string_ac[1::]
@@ -33,14 +34,14 @@ class Read(ReadUtils):
                 else:
                     print('^D')
                     raise EOFError()
-            if keypress == 'KBDINT':
+            if keypress == bindings.keyboard_interrupt:
                 if string_ac+string_bc:
                     string_ac=string_bc=''
                     print('^C')
                 else:
                     raise KeyboardInterrupt()
 
-            if keypress == 'UPKY':
+            if keypress == bindings.history_navigate_up:
                 #UP
                 if string and not temp_string_buff: temp_string_buff = string
                 if current >= 0 and current < len(self.history_buff):
@@ -55,7 +56,7 @@ class Read(ReadUtils):
                         string_bc = self.args(string, -1)
                         current = len(self.history_buff)-1
                 string_ac=''
-            elif keypress == 'DWKY':
+            elif keypress == bindings.history_navigate_down:
                 ## DOWN 
                 if current < len(self.history_buff):
                     current+=1
@@ -69,7 +70,7 @@ class Read(ReadUtils):
                         string_bc=''
                     current=len(self.history_buff)-1
                 string_ac=''
-            elif keypress == 'RTKY':
+            elif keypress == bindings.line_navigate_right:
                 ## RIGHT
                 if string_ac:
                     string_bc+=string_ac[0]
@@ -78,7 +79,7 @@ class Read(ReadUtils):
                     else:
                         string_ac=''
 
-            elif keypress == 'LTKY':
+            elif keypress == bindings.line_navigate_left:
                 ## LEFT
                 if string_bc:
                     temp_char = string_bc[-1]
@@ -87,23 +88,23 @@ class Read(ReadUtils):
                     string_ac=temp_char
                     del temp_char
 
-            elif keypress == 'HOME':
+            elif keypress == bindings.line_navigate_begin:
                 ## HOME
                 string_ac=string_bc+string_ac
                 string_bc=''
 
-            elif keypress == 'END':
+            elif keypress == bindings.line_navigate_end:
                 ## END
                 string_bc+=string_ac
                 string_ac=''
 
-            if keypress == 'DEL':
+            if keypress == bindings.delete_on_current_position:
                 if len(string_ac) > 1:
                     string_ac=string_ac[1::]
                 else:
                     string_ac=''
 
-            if keypress == 'BACK':
+            if keypress == bindings.delete_previous_position:
                 try:
                     string_bc = string_bc[:-1:]
                 except IndexError:
@@ -111,7 +112,7 @@ class Read(ReadUtils):
                     pass
                 finally:
                     continue
-            if keypress == 'C-BCK':
+            if keypress == bindings.delete_previous_word:
                 if string_bc:
                     strlist: list = string_bc.split(' ')
                     if strlist[-1]:
@@ -129,7 +130,7 @@ class Read(ReadUtils):
                     del strlist
                 continue
 
-            if keypress == 'TAB':
+            if keypress == bindings.autocomplete:
                 if string_bc:
                     if ' ' not in string_bc:
                         for word in self.valid_cmd_list:
