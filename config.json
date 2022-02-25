@@ -1,0 +1,28 @@
+{
+    "$schema": "./schema.json",
+    "coloring": {
+        "valid_command": "bold green",
+        "invalid_command": "red",
+        "quoted_string_complete": "bold yellow",
+        "quoted_string_incomplete": "bold red",
+        "flags": "blue",
+        "comment": "cyan",
+        "path_exists": "bold underline",
+        "numeric": "magenta"
+    },
+    "keybindings": {
+        "end_of_line": "EOL",
+        "end_of_file": "C-D",
+        "keyboard_interrupt": "C-C",
+        "history_navigate_up": "UPKY",
+        "history_navigate_down": "DWKY",
+        "line_navigate_left": "LTKY",
+        "line_navigate_right": "RTKY",
+        "line_navigate_begin": "HOME",
+        "line_navigate_end": "END",
+        "delete_on_current_position": "DEL",
+        "delete_previous_position": "BACK",
+        "delete_previous_word": "C-BACK",
+        "autocomplete": "TAB"
+    }
+}
