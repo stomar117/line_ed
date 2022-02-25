@@ -1,0 +1,314 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": {},
+    "examples": [
+        {
+            "coloring": {
+                "valid_command": "bold green",
+                "invalid_command": "red",
+                "quoted_string_complete": "bold yellow",
+                "quoted_string_incomplete": "bold red",
+                "flags": "blue",
+                "comment": "cyan",
+                "path_exists": "bold underline",
+                "numeric": "magenta"
+            },
+            "keybindings": {
+                "end_of_line": "EOL",
+                "end_of_file": "C-D",
+                "keyboard_interrupt": "C-C",
+                "history_navigate_up": "UPKY",
+                "history_navigate_down": "DWKY",
+                "line_navigate_left": "LTKY",
+                "line_navigate_right": "RTKY",
+                "line_navigate_begin": "HOME",
+                "line_navigate_end": "END",
+                "delete_on_current_position": "DEL",
+                "delete_previous_position": "BACK",
+                "delete_previous_word": "C-BACK",
+                "autocomplete": "TAB"
+            }
+        }
+    ],
+    "required": [
+        "coloring",
+        "keybindings"
+    ],
+    "properties": {
+        "$schema": {
+            "title": "Schema",
+            "description": "Schema to use for linting purposes"
+        },
+        "coloring": {
+            "$id": "#/properties/coloring",
+            "type": "object",
+            "title": "Colors",
+            "description": "This schema contains coloring for specific cases in the line editor, All the coloring codes are used from `rich.console.Console()` class of python module `rich`. Refrence `rich` documentation for more information",
+            "default": {},
+            "examples": [
+                {
+                    "valid_command": "bold green"
+                }
+            ],
+            "required": [
+                "valid_command",
+                "invalid_command",
+                "quoted_string_complete",
+                "quoted_string_incomplete",
+                "flags",
+                "comment",
+                "path_exists",
+                "numeric"
+            ],
+            "properties": {
+                "valid_command": {
+                    "$id": "#/properties/coloring/properties/valid_command",
+                    "type": "string",
+                    "title": "The valid_command schema",
+                    "description": "Color to paint a word if it is a valid command(determined by `cmd_list` in `reader.py`)",
+                    "default": "bold green",
+                    "examples": [
+                        "bold green"
+                    ]
+                },
+                "invalid_command": {
+                    "$id": "#/properties/coloring/properties/invalid_command",
+                    "type": "string",
+                    "title": "The invalid_command schema",
+                    "description": "Paint the word if it not exists in `cmd_list` from `reader.py`",
+                    "default": "red",
+                    "examples": [
+                        "bold underline red"
+                    ]
+                },
+                "quoted_string_complete": {
+                    "$id": "#/properties/coloring/properties/quoted_string_complete",
+                    "type": "string",
+                    "title": "The quoted_string_complete schema",
+                    "description": "Paint string if it exists as a completely quoted string",
+                    "default": "bold yellow",
+                    "examples": [
+                        "underline yellow"
+                    ]
+                },
+                "quoted_string_incomplete": {
+                    "$id": "#/properties/coloring/properties/quoted_string_incomplete",
+                    "type": "string",
+                    "title": "The quoted_string_incomplete schema",
+                    "description": "Paint string if quotation of string is incomplete",
+                    "default": "bold red",
+                    "examples": [
+                        "underline red"
+                    ]
+                },
+                "flags": {
+                    "$id": "#/properties/coloring/properties/flags",
+                    "type": "string",
+                    "title": "The flags schema",
+                    "description": "Paint string if it represents a command line argument, \nExample: (-h, --help)",
+                    "default": "blue",
+                    "examples": [
+                        "bold cyan"
+                    ]
+                },
+                "comment": {
+                    "$id": "#/properties/coloring/properties/comment",
+                    "type": "string",
+                    "title": "The comment schema",
+                    "description": "Paint if the string represents a commandline comment, Generally denoted by a pound(#) at the beginning of string.",
+                    "default": "cyan",
+                    "examples": [
+                        "bold blue"
+                    ]
+                },
+                "path_exists": {
+                    "$id": "#/properties/coloring/properties/path_exists",
+                    "type": "string",
+                    "title": "The path_exists schema",
+                    "description": "Paint string if it represents a valid path that exists on the file system",
+                    "default": "bold underline",
+                    "examples": [
+                        "underline"
+                    ]
+                },
+                "numeric": {
+                    "$id": "#/properties/coloring/properties/numeric",
+                    "type": "string",
+                    "title": "The numeric schema",
+                    "description": "Paint string if it represents a numeric value (float or integer),\nExample: (1, 1.23, 1.0)",
+                    "default": "magenta",
+                    "examples": [
+                        "bold cyan"
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "keybindings": {
+            "$id": "#/properties/keybindings",
+            "type": "object",
+            "title": "Key Bindings",
+            "description": "Contains possible key bindings to configure for `reader/Reader.py`",
+            "default": {},
+            "examples": [
+                {
+                    "end_of_line": "EOL",
+                    "end_of_file": "C-D"
+                }
+            ],
+            "required": [
+                "end_of_line",
+                "end_of_file",
+                "keyboard_interrupt",
+                "history_navigate_up",
+                "history_navigate_down",
+                "line_navigate_left",
+                "line_navigate_right",
+                "line_navigate_begin",
+                "line_navigate_end",
+                "delete_on_current_position",
+                "delete_previous_position",
+                "delete_previous_word",
+                "autocomplete"
+            ],
+            "properties": {
+                "end_of_line": {
+                    "$id": "#/properties/keybindings/properties/end_of_line",
+                    "type": "string",
+                    "title": "The end_of_line schema",
+                    "description": "Binding to terminate current line",
+                    "default": "EOL",
+                    "examples": [
+                        "EOL"
+                    ]
+                },
+                "end_of_file": {
+                    "$id": "#/properties/keybindings/properties/end_of_file",
+                    "type": "string",
+                    "title": "The end_of_file schema",
+                    "description": "Binding to indicate end of file(ultimately terminating the code where `read` class is called)",
+                    "default": "C-D",
+                    "examples": [
+                        "C-D"
+                    ]
+                },
+                "keyboard_interrupt": {
+                    "$id": "#/properties/keybindings/properties/keyboard_interrupt",
+                    "type": "string",
+                    "title": "The keyboard_interrupt schema",
+                    "description": "Binding to indicate a keyboard interrupt signal",
+                    "default": "C-C",
+                    "examples": [
+                        "C-C"
+                    ]
+                },
+                "history_navigate_up": {
+                    "$id": "#/properties/keybindings/properties/history_navigate_up",
+                    "type": "string",
+                    "title": "The history_navigate_up schema",
+                    "description": "Binding to navigate to the upper line, or move up one command in history",
+                    "default": "UPKY",
+                    "examples": [
+                        "UPKY"
+                    ]
+                },
+                "history_navigate_down": {
+                    "$id": "#/properties/keybindings/properties/history_navigate_down",
+                    "type": "string",
+                    "title": "The history_navigate_down schema",
+                    "description": "Binding to navigate to the lower line, or move down one command in history",
+                    "default": "DWKY",
+                    "examples": [
+                        "DWKY"
+                    ]
+                },
+                "line_navigate_left": {
+                    "$id": "#/properties/keybindings/properties/line_navigate_left",
+                    "type": "string",
+                    "title": "The line_navigate_left schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "LTKY",
+                    "examples": [
+                        "LTKY"
+                    ]
+                },
+                "line_navigate_right": {
+                    "$id": "#/properties/keybindings/properties/line_navigate_right",
+                    "type": "string",
+                    "title": "The line_navigate_right schema",
+                    "description": "Cursor to move the cursor one step in the right pointing direction",
+                    "default": "RTKY",
+                    "examples": [
+                        "RTKY"
+                    ]
+                },
+                "line_navigate_begin": {
+                    "$id": "#/properties/keybindings/properties/line_navigate_begin",
+                    "type": "string",
+                    "title": "The line_navigate_begin schema",
+                    "description": "Binding to move the cursor to the beginning of the line",
+                    "default": "HOME",
+                    "examples": [
+                        "HOME"
+                    ]
+                },
+                "line_navigate_end": {
+                    "$id": "#/properties/keybindings/properties/line_navigate_end",
+                    "type": "string",
+                    "title": "The line_navigate_end schema",
+                    "description": "Binding to move the cursor to end of the line",
+                    "default": "END",
+                    "examples": [
+                        "END"
+                    ]
+                },
+                "delete_on_current_position": {
+                    "$id": "#/properties/keybindings/properties/delete_on_current_position",
+                    "type": "string",
+                    "title": "The delete_on_current_position schema",
+                    "description": "Binding to delete character at the position of the cursor",
+                    "default": "DEL",
+                    "examples": [
+                        "DEL"
+                    ]
+                },
+                "delete_previous_position": {
+                    "$id": "#/properties/keybindings/properties/delete_previous_position",
+                    "type": "string",
+                    "title": "The delete_previous_position schema",
+                    "description": "Binding to delete character on position just before the cursor",
+                    "default": "BACK",
+                    "examples": [
+                        "BACK"
+                    ]
+                },
+                "delete_previous_word": {
+                    "$id": "#/properties/keybindings/properties/delete_previous_word",
+                    "type": "string",
+                    "title": "The delete_previous_word schema",
+                    "description": "Binding to delete previous word in current line",
+                    "default": "C-BACK",
+                    "examples": [
+                        "C-BACK"
+                    ]
+                },
+                "autocomplete": {
+                    "$id": "#/properties/keybindings/properties/autocomplete",
+                    "type": "string",
+                    "title": "The autocomplete schema",
+                    "description": "Binding for providing autocompletion",
+                    "default": "TAB",
+                    "examples": [
+                        "TAB"
+                    ]
+                }
+            },
+            "additionalProperties": true
+        }
+    },
+    "additionalProperties": false
+}
