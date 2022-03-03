@@ -11,7 +11,7 @@
         "numeric": "magenta"
     },
     "keybindings": {
-        "end_of_line": "EOL",
+        "end_of_line": "RETURN",
         "end_of_file": "C-D",
         "keyboard_interrupt": "C-C",
         "history_navigate_up": "UPKY",

@@ -13,9 +13,9 @@ class getkey:
 
     def _getkey_unix(self) -> str:
         key = Getch()()
-        if key == '\r': return 'EOL'
-        if ord(key) == 4: return 'EOF'
-        if ord(key) == 3: return 'KBDINT'
+        if key == '\r': return 'RETURN'
+        # if ord(key) == 4: return 'EOF'
+        # if ord(key) == 3: return 'KBDINT'
         if ord(key) == 27:
             newkey = Getch()()
             if ord(newkey) == 91:
@@ -32,14 +32,18 @@ class getkey:
         elif ord(key) == 127: return 'BACK'
         elif ord(key) == 8: return 'C-BACK'
         elif ord(key) == 9: return 'TAB'
-        if key.isprintable(): return key
-        else: return ''
+        if key.isprintable() and len(key) == 1:
+            return key
+        else:
+            if chr(ord(key)+64).isalpha:
+                return f'C-{chr(ord(key)+64)}'
+            else: return ''
 
     def _getkey_win(self) -> str:
         key = Getch()()
         try:
             keypress = key.decode()
-            if keypress == '\r': return 'EOL'
+            if keypress == '\r': return 'RETURN'
             elif ord(keypress) == 8: return 'BACK'
             elif ord(keypress) == 127: return 'C-BACK'
             elif ord(keypress) == 9: return 'TAB'
