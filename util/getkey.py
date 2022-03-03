@@ -30,7 +30,7 @@ class getkey:
                     newkey = Getch()()
                     if ord(newkey) == 126: return 'DEL'
         elif ord(key) == 127: return 'BACK'
-        elif ord(key) == 8: return 'C-BCK'
+        elif ord(key) == 8: return 'C-BACK'
         elif ord(key) == 9: return 'TAB'
         if key.isprintable(): return key
         else: return ''

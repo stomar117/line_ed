@@ -87,7 +87,7 @@ class Splitters:
         return str_container
 
     @staticmethod
-    def dbreaker(string: str, delimiter: str = ' ') -> list:
+    def dbreaker(string: str, delimiter: str = ' ', enableTrim: bool = False) -> list:
         if delimiter.isalnum(): raise ValueError('delimitter cannot be an alpha-numeric character')
         if delimiter not in string: return [string]
         form_string: str = ''
@@ -108,6 +108,6 @@ class Splitters:
                 if ch == delimiter:
                     str_container.append(form_string+ch)
                     form_string=''
-        if form_string:
+        if (enableTrim and form_string) or not enableTrim:
             str_container.append(form_string)
         return str_container

@@ -31,18 +31,21 @@ class ReadUtils:
         else: return False
 
     def _paint_word(self, color: str, string: str) -> str:
-        scln_ck: int = 0
-        if string[-1] == ';':
-            string=string[:-1:]
-            scln_ck = 1
-        if string[-1] == ' ':
-            needed_string = string[:-1:]
-            needed_string=f'[{color}]'+needed_string+('[/]' if not string.endswith('\\') or string.endswith('\\\\') else '\[/]')
-            return needed_string+' '
+        semicolon_check: int = 0
+        if string:
+            if string[-1] == ';':
+                string=string[:-1:]
+                semicolon_check = 1
+            if string and string[-1] == ' ':
+                needed_string = string[:-1:]
+                needed_string=f'[{color}]'+needed_string+('[/]' if not string.endswith('\\') or string.endswith('\\\\') else '\[/]')
+                return needed_string+' '
+            else:
+                if semicolon_check:
+                    return f'[{color}]'+self._prettify(string)+'[/];'
+                return f'[{color}]'+string+('[/]' if not string.endswith('\\') or string.endswith('\\\\') else '\[/]')
         else:
-            if scln_ck:
-                return f'[{color}]'+self._prettify(string)+'[/];'
-            return f'[{color}]'+string+('[/]' if not string.endswith('\\') or string.endswith('\\\\') else '\[/]')
+            return ''
     
     def _prettify(self, string: str) -> str:
         if not self.valid_cmd_list: return string
@@ -115,3 +118,4 @@ class ReadUtils:
                 Console.print(f'{prompt} {self._prettify(string_a)}', end='')
             else:
                 Console.print(f'\r{prompt} {self._prettify(string_a)}', end='')
+        # self._prettify(string_a+string_b)
