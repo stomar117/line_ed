@@ -2,6 +2,27 @@ from .getch import Getch
 from platform import platform
 
 class getkey:
+    '''
+    Returns Keypress names depending on what key is returned by `Getch`.
+
+    The Keycodes are:
+    
+        - RETURN  --> Returned when 'Enter' Key is pressed
+        - UPKY    --> Returned when 'Up Arrow' key is pressed
+        - DWKY    --> Returned when 'Down Arrow' key is pressed
+        - RTKY    --> Returned when 'Right Arrow' key is pressed
+        - LTKY    --> Returned when 'Left Arrow' key is pressed
+        - DEL     --> Returned when 'Delete' key is pressed
+        - BACK    --> Returned when 'Backspace' key is pressed
+        - HOME    --> Returned when 'Home' key is pressed
+        - END     --> Returned when 'End' key is pressed
+        - C-{KEY} --> Returned when 'Control+Some Key' key is pressed
+        - TAB     --> Returned when 'Tab' key is pressed
+        - PGUP    --> Returned when 'Page Up' key is pressed
+        - PGDW    --> Returned when 'Page Down' key is pressed
+        - INS     --> Returned when 'Insert' key is pressed
+
+    '''
     def __init__(self):
         pass
 
@@ -14,8 +35,6 @@ class getkey:
     def _getkey_unix(self) -> str:
         key = Getch()()
         if key == '\r': return 'RETURN'
-        # if ord(key) == 4: return 'EOF'
-        # if ord(key) == 3: return 'KBDINT'
         if ord(key) == 27:
             newkey = Getch()()
             if ord(newkey) == 91:
@@ -29,6 +48,15 @@ class getkey:
                 elif ord(newkey) == 51:
                     newkey = Getch()()
                     if ord(newkey) == 126: return 'DEL'
+                elif ord(newkey) == 53:
+                    newkey = Getch()()
+                    if ord(newkey) == 126: return 'PGUP'
+                elif ord(newkey) == 54:
+                    newkey = Getch()()
+                    if ord(newkey) == 126: return 'PGDW'
+                elif ord(newkey) == 50:
+                    newkey = Getch()()
+                    if ord(newkey) == 126: return 'INS'
         elif ord(key) == 127: return 'BACK'
         elif ord(key) == 8: return 'C-BACK'
         elif ord(key) == 9: return 'TAB'
@@ -37,7 +65,7 @@ class getkey:
         else:
             if chr(ord(key)+64).isalpha:
                 return f'C-{chr(ord(key)+64)}'
-            else: return ''
+            else: ord(key)
 
     def _getkey_win(self) -> str:
         key = Getch()()
